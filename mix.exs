@@ -37,6 +37,8 @@ defmodule Membrane.Element.IbmSpeechToText.MixProject do
   defp deps do
     [
       {:membrane_core, "~> 0.3.0"},
+      {:membrane_caps_audio_flac, "~> 0.1.0",
+       github: "membraneframework/membrane-caps-audio-flac", branch: "metadata"},
       {:ibm_speech_to_text, "~> 0.1.0", github: "SoftwareMansion/elixir-ibm-speech-to-text"},
       {:ex_doc, "~> 0.20", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0.0-rc.6", only: [:dev], runtime: false}
