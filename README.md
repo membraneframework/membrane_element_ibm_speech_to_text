@@ -1,6 +1,12 @@
-# Membrane Multimedia Framework: IbmSpeechToText
+# Membrane Multimedia Framework: IBM Speech To Text
 
-This package provides elements that can be used ...
+[![Hex.pm](https://img.shields.io/hexpm/v/membrane_element_ibm_speech_to_text.svg)](https://hex.pm/packages/membrane_element_ibm_speech_to_text)
+[![CircleCI](https://circleci.com/gh/membraneframework/membrane-element-ibm-speech-to-text)](https://circleci.com/gh/membraneframework/membrane-element-ibm-speech-to-text)
+
+This package provides a Sink wrapping [IBM Speech To Text Streaming API client](https://hex.pm/packages/ibm_speech_to_text).
+Currently supports only audio streams in FLAC format.
+
+The docs can be found at [HexDocs](https://hexdocs.pm/membrane_element_ibm_speech_to_text).
 
 ## Installation
 
@@ -14,4 +20,68 @@ def deps do
 end
 ```
 
-The docs can be found at [HexDocs](https://hexdocs.pm/membrane_element_ibm_speech_to_text).
+## Usage
+
+The input stream for this element should be parsed, so most of the time it should be
+placed in pipeline right after FLACParser
+
+Here's an example of pipeline streaming audio file to speech recognition API:
+
+```elixir
+defmodule SpeechRecognition do
+  use Membrane.Pipeline
+
+  alias Membrane.Element.{File, FLACParser, IBMSpeechToText}
+
+  def handle_init(_) do
+    children = [
+      src: %File.Source{location: "sample.flac"},
+      parser: FLACParser,
+      sink: %IBMSpeechToText.Sink{
+        region: :frankfurt,
+        api_key: "ADD_YOUR_API_HERE"
+      }
+    ]
+
+    links = %{
+      {:src, :output} => {:parser, :input},
+      {:parser, :output} => {:sink, :input}
+    }
+
+    spec = %Membrane.Pipeline.Spec{
+      children: children,
+      links: links
+    }
+
+    {{:ok, spec}, %{}}
+  end
+
+  def handle_notification(notification, elem, state) do
+    IO.inspect({elem, notification})
+    {:ok, state}
+  end
+end
+```
+
+To run, the pipeline requires following dependencies:
+
+```elixir
+[
+  {:membrane_core, "~> 0.3.0"},
+  {:membrane_element_file, "~> 0.2"},
+  {:membrane_element_flac_parser, "~> 0.1"},
+  {:membrane_element_ibm_speech_to_text, "~> 0.1"}
+]
+```
+
+## Sponsors
+
+This project is sponsored by [Abridge AI, Inc.](https://abridge.ai)
+
+## Copyright and License
+
+Copyright 2019, [Software Mansion](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=membrane-caps-audio-flac)
+
+[![Software Mansion](https://membraneframework.github.io/static/logo/swm_logo_readme.png)](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=membrane-caps-audio-flac)
+
+Licensed under the [Apache License, Version 2.0](LICENSE)
