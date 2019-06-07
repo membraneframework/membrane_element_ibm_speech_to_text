@@ -1,4 +1,4 @@
-defmodule Membrane.Element.IbmSpeechToText.MixProject do
+defmodule Membrane.Element.IBMSpeechToText.MixProject do
   use Mix.Project
 
   @version "0.1.0"
@@ -59,7 +59,8 @@ defmodule Membrane.Element.IbmSpeechToText.MixProject do
     [
       main: "readme",
       extras: ["README.md"],
-      source_ref: "v#{@version}"
+      source_ref: "v#{@version}",
+      nest_modules_by_prefix: [Membrane.Element]
     ]
   end
 end

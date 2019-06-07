@@ -1,4 +1,10 @@
 defmodule Membrane.Element.IBMSpeechToText do
+  @moduledoc """
+  Element providing speech recognition via IBM Cloud Speech to Text service.
+
+  It uses [ibm_speech_to_text](https://github.com/SoftwareMansion/elixir-ibm-speech-to-text)
+  client library.
+  """
   use Membrane.Element.Base.Sink
   alias Membrane.Buffer
   alias Membrane.Caps.Audio.FLAC

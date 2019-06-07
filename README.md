@@ -1,7 +1,7 @@
 # Membrane Multimedia Framework: IBM Speech To Text
 
 [![Hex.pm](https://img.shields.io/hexpm/v/membrane_element_ibm_speech_to_text.svg)](https://hex.pm/packages/membrane_element_ibm_speech_to_text)
-[![CircleCI](https://circleci.com/gh/membraneframework/membrane-element-ibm-speech-to-text)](https://circleci.com/gh/membraneframework/membrane-element-ibm-speech-to-text)
+[![CircleCI](https://circleci.com/gh/membraneframework/membrane-element-ibm-speech-to-text.svg?style=svg)](https://circleci.com/gh/membraneframework/membrane-element-ibm-speech-to-text)
 
 This package provides a Sink wrapping [IBM Speech To Text Streaming API client](https://hex.pm/packages/ibm_speech_to_text).
 Currently supports only audio streams in FLAC format.
@@ -23,7 +23,7 @@ end
 ## Usage
 
 The input stream for this element should be parsed, so most of the time it should be
-placed in pipeline right after FLACParser
+placed in pipeline right after [FLACParser](https://github.com/membraneframework/membrane-element-flac-parser)
 
 Here's an example of pipeline streaming audio file to speech recognition API:
 
@@ -39,7 +39,7 @@ defmodule SpeechRecognition do
       parser: FLACParser,
       sink: %IBMSpeechToText.Sink{
         region: :frankfurt,
-        api_key: "ADD_YOUR_API_HERE"
+        api_key: "PUT_YOUR_API_KEY_HERE"
       }
     ]
 
