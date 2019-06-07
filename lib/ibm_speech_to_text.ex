@@ -1,6 +1,9 @@
 defmodule Membrane.Element.IBMSpeechToText do
   @moduledoc """
-  Element providing speech recognition via IBM Cloud Speech to Text service.
+  An element providing speech recognition via IBM Cloud Speech to Text service.
+
+  This element sends messages of type `t:transcripts_msg/0` with recognized final transcriptions
+  to the pid provided via `stream_to` option.
 
   It uses [ibm_speech_to_text](https://github.com/SoftwareMansion/elixir-ibm-speech-to-text)
   client library.
@@ -27,7 +30,15 @@ defmodule Membrane.Element.IBMSpeechToText do
                 API key for the Speech to Text Service
                 """,
                 type: :string
+              ],
+              stream_to: [
+                description: """
+                Pid of a process that will receive transcipts
+                """,
+                type: :pid
               ]
+
+  @type transcripts_msg :: {:transcripts, [String.t()]}
 
   @impl true
   def handle_init(opts) do
@@ -95,7 +106,7 @@ defmodule Membrane.Element.IBMSpeechToText do
 
   @impl true
   def handle_other(%Response{} = response, _ctx, state) do
-    transcipts =
+    transcripts =
       response.results
       |> Enum.filter(fn result -> result.final end)
       |> Enum.map(fn result ->
@@ -103,10 +114,11 @@ defmodule Membrane.Element.IBMSpeechToText do
         alternative.transcript
       end)
 
-    case transcipts do
-      [] -> {:ok, state}
-      _ -> {{:ok, notify: transcipts}, state}
+    if transcripts != [] do
+      send(state.stream_to, {:transcripts, transcripts})
     end
+
+    {:ok, state}
   end
 
   @impl true

@@ -33,13 +33,15 @@ defmodule SpeechRecognition do
 
   alias Membrane.Element.{File, FLACParser, IBMSpeechToText}
 
+  @impl true
   def handle_init(_) do
     children = [
       src: %File.Source{location: "sample.flac"},
       parser: FLACParser,
-      sink: %IBMSpeechToText.Sink{
+      sink: %IBMSpeechToText{
         region: :frankfurt,
-        api_key: "PUT_YOUR_API_KEY_HERE"
+        api_key: "PUT_YOUR_API_KEY_HERE",
+        stream_to: self()
       }
     ]
 
@@ -56,8 +58,9 @@ defmodule SpeechRecognition do
     {{:ok, spec}, %{}}
   end
 
-  def handle_notification(notification, elem, state) do
-    IO.inspect({elem, notification})
+  @impl true
+  def handle_other({:transcripts, transcripts}, state) do
+    transcripts |> Enum.each(&IO.puts/1)
     {:ok, state}
   end
 end
