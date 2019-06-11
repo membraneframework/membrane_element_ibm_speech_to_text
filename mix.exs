@@ -1,4 +1,4 @@
-defmodule Membrane.Element.IbmSpeechToText.MixProject do
+defmodule Membrane.Element.IBMSpeechToText.MixProject do
   use Mix.Project
 
   @version "0.1.0"
@@ -37,6 +37,8 @@ defmodule Membrane.Element.IbmSpeechToText.MixProject do
   defp deps do
     [
       {:membrane_core, "~> 0.3.0"},
+      {:membrane_caps_audio_flac, "~> 0.1.1"},
+      {:ibm_speech_to_text, "~> 0.1.2"},
       {:ex_doc, "~> 0.20", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0.0-rc.6", only: [:dev], runtime: false}
     ]
@@ -57,7 +59,19 @@ defmodule Membrane.Element.IbmSpeechToText.MixProject do
     [
       main: "readme",
       extras: ["README.md"],
-      source_ref: "v#{@version}"
+      source_ref: "v#{@version}",
+      nest_modules_by_prefix: [Membrane.Element],
+      before_closing_head_tag: &sidebar_fix/1
     ]
+  end
+
+  defp sidebar_fix(_) do
+    """
+    <style type="text/css">
+    .sidebar div.sidebar-header {
+      margin: 15px;
+    }
+    </style>
+    """
   end
 end
