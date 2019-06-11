@@ -2,8 +2,8 @@ defmodule Membrane.Element.IBMSpeechToText do
   @moduledoc """
   An element providing speech recognition via IBM Cloud Speech to Text service.
 
-  This element sends messages of type `t:transcripts_msg/0` with recognized final transcriptions
-  to the pid provided via `stream_to` option.
+  This element sends speech recognition results (`t:IBMSpeechToText.Response.t()`)
+  via notification mechanism to pipeline.
 
   It uses [ibm_speech_to_text](https://github.com/SoftwareMansion/elixir-ibm-speech-to-text)
   client library.
@@ -31,14 +31,16 @@ defmodule Membrane.Element.IBMSpeechToText do
                 """,
                 type: :string
               ],
-              stream_to: [
+              recognition_options: [
                 description: """
-                Pid of a process that will receive transcipts
+                Options passed via `IBMSpeechToText.Message.Start` struct
+                to recognition API affecting the results.
+                See the docs for `t:IBMSpeechToText.Message.Start.t/0`
+                and [IBM API docs](https://cloud.ibm.com/apidocs/speech-to-text#wstextmessages)
                 """,
-                type: :pid
+                type: :keyword,
+                default: [interim_results: true]
               ]
-
-  @type transcripts_msg :: {:transcripts, [String.t()]}
 
   @impl true
   def handle_init(opts) do
@@ -51,6 +53,9 @@ defmodule Membrane.Element.IBMSpeechToText do
         sample_rate: 16_000,
         connection: nil
       })
+      |> Map.update!(:recognition_options, fn rec_opts ->
+        Keyword.merge(rec_opts, content_type: :flac, inactivity_timeout: -1)
+      end)
 
     {:ok, state}
   end
@@ -64,7 +69,8 @@ defmodule Membrane.Element.IBMSpeechToText do
 
   @impl true
   def handle_caps(:input, %FLAC{} = caps, _ctx, %{connection: conn} = state) do
-    Client.send_message(conn, %Message.Start{content_type: :flac, interim_results: true})
+    message = struct!(Message.Start, state.recognition_options)
+    Client.send_message(conn, message)
     start_time = Time.os_time()
     state = %{state | start_time: start_time, sample_rate: caps.sample_rate}
     {:ok, state}
@@ -106,19 +112,7 @@ defmodule Membrane.Element.IBMSpeechToText do
 
   @impl true
   def handle_other(%Response{} = response, _ctx, state) do
-    transcripts =
-      response.results
-      |> Enum.filter(fn result -> result.final end)
-      |> Enum.map(fn result ->
-        alternative = result.alternatives |> hd()
-        alternative.transcript
-      end)
-
-    if transcripts != [] do
-      send(state.stream_to, {:transcripts, transcripts})
-    end
-
-    {:ok, state}
+    {{:ok, notify: response}, state}
   end
 
   @impl true
