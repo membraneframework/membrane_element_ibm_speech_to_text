@@ -31,6 +31,7 @@ Here's an example of pipeline streaming audio file to speech recognition API:
 defmodule SpeechRecognition do
   use Membrane.Pipeline
 
+  alias IBMSpeechToText.Response
   alias Membrane.Element.{File, FLACParser, IBMSpeechToText}
 
   @impl true
@@ -40,8 +41,7 @@ defmodule SpeechRecognition do
       parser: FLACParser,
       sink: %IBMSpeechToText{
         region: :frankfurt,
-        api_key: "PUT_YOUR_API_KEY_HERE",
-        stream_to: self()
+        api_key: "PUT_YOUR_API_KEY_HERE"
       }
     ]
 
@@ -59,8 +59,12 @@ defmodule SpeechRecognition do
   end
 
   @impl true
-  def handle_other({:transcripts, transcripts}, state) do
-    transcripts |> Enum.each(&IO.puts/1)
+  def handle_notification(%Response{} = response, _element, state) do
+    IO.inspect(response)
+    {:ok, state}
+  end
+
+  def handle_notification(_notification, _element, state) do
     {:ok, state}
   end
 end
