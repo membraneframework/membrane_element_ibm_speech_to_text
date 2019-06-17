@@ -77,9 +77,9 @@ defmodule Membrane.Element.IBMSpeechToText do
   end
 
   @impl true
-  def handle_event(:input, %EndOfStream{}, _ctx, %{connection: conn} = state) do
+  def handle_event(:input, %EndOfStream{}, ctx, %{connection: conn} = state) do
     Client.send_message(conn, %Message.Stop{})
-    {:ok, state}
+    super(:input, %EndOfStream{}, ctx, state)
   end
 
   @impl true
