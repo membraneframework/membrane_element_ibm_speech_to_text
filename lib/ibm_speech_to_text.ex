@@ -71,6 +71,13 @@ defmodule Membrane.Element.IBMSpeechToText do
   end
 
   @impl true
+  def handle_playing_to_prepared(_ctx, %{connection: conn} = state) do
+    Client.stop(conn)
+    info("IBM API Client stopped")
+    {:ok, %{state | connection: nil}}
+  end
+
+  @impl true
   def handle_caps(:input, %FLAC{} = caps, _ctx, %{connection: conn} = state) do
     info("Starting recognition")
     message = struct!(Message.Start, state.recognition_options)
