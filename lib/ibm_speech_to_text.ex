@@ -9,6 +9,7 @@ defmodule Membrane.Element.IBMSpeechToText do
   client library.
   """
   use Membrane.Element.Base.Sink
+  use Membrane.Log, tags: :membrane_element_ibm_stt
   alias Membrane.Buffer
   alias Membrane.Caps.Audio.FLAC
   alias Membrane.Event.EndOfStream
@@ -63,12 +64,14 @@ defmodule Membrane.Element.IBMSpeechToText do
   @impl true
   def handle_prepared_to_playing(_ctx, state) do
     with {:ok, pid} <- Client.start_link(state.region, state.api_key) do
+      info("IBM API Client started")
       {{:ok, demand: :input}, %{state | connection: pid}}
     end
   end
 
   @impl true
   def handle_caps(:input, %FLAC{} = caps, _ctx, %{connection: conn} = state) do
+    info("Starting recognition")
     message = struct!(Message.Start, state.recognition_options)
     Client.send_message(conn, message)
     start_time = Time.os_time()
@@ -79,6 +82,7 @@ defmodule Membrane.Element.IBMSpeechToText do
   @impl true
   def handle_event(:input, %EndOfStream{}, ctx, %{connection: conn} = state) do
     Client.send_message(conn, %Message.Stop{})
+    info("End of Stream")
     super(:input, %EndOfStream{}, ctx, state)
   end
 
