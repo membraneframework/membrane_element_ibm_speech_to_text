@@ -50,6 +50,7 @@ defmodule Membrane.Element.IBMSpeechToText do
       |> Map.from_struct()
       |> Map.merge(%{
         start_time: nil,
+        timer: nil,
         samples: 0,
         sample_rate: 16_000,
         connection: nil
@@ -70,6 +71,13 @@ defmodule Membrane.Element.IBMSpeechToText do
   end
 
   @impl true
+  def handle_playing_to_prepared(_ctx, %{connection: conn} = state) do
+    Client.stop(conn)
+    info("IBM API Client stopped")
+    {:ok, %{state | connection: nil}}
+  end
+
+  @impl true
   def handle_caps(:input, %FLAC{} = caps, _ctx, %{connection: conn} = state) do
     info("Starting recognition")
     message = struct!(Message.Start, state.recognition_options)
@@ -83,7 +91,12 @@ defmodule Membrane.Element.IBMSpeechToText do
   def handle_event(:input, %EndOfStream{}, ctx, %{connection: conn} = state) do
     Client.send_message(conn, %Message.Stop{})
     info("End of Stream")
-    super(:input, %EndOfStream{}, ctx, state)
+
+    if state.timer != nil do
+      Process.cancel_timer(state.timer)
+    end
+
+    super(:input, %EndOfStream{}, ctx, %{state | timer: nil})
   end
 
   @impl true
@@ -103,9 +116,9 @@ defmodule Membrane.Element.IBMSpeechToText do
     next_sample_num = meta.starting_sample_number + meta.samples
     next_frame_time = start_time + trunc(next_sample_num * Time.seconds(1) / sample_rate)
     demand_time = (next_frame_time - Time.os_time()) |> max(0) |> Time.to_milliseconds()
-    Process.send_after(self(), :demand_frame, demand_time)
+    timer = Process.send_after(self(), :demand_frame, demand_time)
 
-    {:ok, state}
+    {:ok, %{state | timer: timer}}
   end
 
   @impl true
@@ -120,7 +133,11 @@ defmodule Membrane.Element.IBMSpeechToText do
   end
 
   @impl true
-  def handle_other(:demand_frame, _ctx, state) do
-    {{:ok, demand: :input}, state}
+  def handle_other(:demand_frame, ctx, state) do
+    if ctx.playback_state == :playing do
+      {{:ok, demand: :input}, state}
+    else
+      {:ok, state}
+    end
   end
 end
