@@ -32,6 +32,13 @@ defmodule Membrane.Element.IBMSpeechToText do
                 """,
                 type: :string
               ],
+              client_options: [
+                description: """
+                Sets the options for `IBMSpeechToText.Client.start_link/3`.
+                """,
+                type: :keyword,
+                default: [keep_alive: true]
+              ],
               recognition_options: [
                 description: """
                 Options passed via `IBMSpeechToText.Message.Start` struct
@@ -64,7 +71,7 @@ defmodule Membrane.Element.IBMSpeechToText do
 
   @impl true
   def handle_prepared_to_playing(_ctx, state) do
-    with {:ok, pid} <- Client.start_link(state.region, state.api_key) do
+    with {:ok, pid} <- Client.start_link(state.region, state.api_key, state.client_options) do
       info("IBM API Client started")
       {{:ok, demand: :input}, %{state | connection: pid}}
     end
