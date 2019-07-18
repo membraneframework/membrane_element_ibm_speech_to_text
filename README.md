@@ -83,7 +83,7 @@ To run, the pipeline requires following dependencies:
 
 ## Sponsors
 
-This project is sponsored by [Abridge AI, Inc.](https://abridge.ai)
+This project is sponsored by [Abridge AI, Inc.](https://abridge.com)
 
 ## Copyright and License
 
