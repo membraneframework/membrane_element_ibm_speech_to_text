@@ -1,4 +1,4 @@
-defmodule Membrane.Element.IbmSpeechToText do
+defmodule Membrane.Element.IBMSpeechToText.App do
   @moduledoc false
   use Application
 
