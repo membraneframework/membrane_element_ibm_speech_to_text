@@ -81,10 +81,6 @@ To run, the pipeline requires following dependencies:
 ]
 ```
 
-## Sponsors
-
-This project is sponsored by [Abridge AI, Inc.](https://abridge.com)
-
 ## Copyright and License
 
 Copyright 2019, [Software Mansion](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=membrane-element-ibm-speech-to-text)
