@@ -81,6 +81,18 @@ To run, the pipeline requires following dependencies:
 ]
 ```
 
+## Testing
+
+The tests contacting real IBM API are excluded by default. You can run them using `mix test --include external`.
+To make it work, you need to provide api key via `config/config.exs` or `config/test.secret.exs` the file needs to look like this:
+
+```elixir
+use Mix.Config
+
+config :ibm_speech_to_text, region: :your_region # e.g. :frankfurt
+config :ibm_speech_to_text, api_key: "YOUR_API_KEY_HERE"
+```
+
 ## Copyright and License
 
 Copyright 2019, [Software Mansion](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=membrane-element-ibm-speech-to-text)

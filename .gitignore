@@ -1,3 +1,5 @@
+config/*secret.exs
+
 ### C ###
 # Prerequisites
 *.d
