@@ -8,11 +8,10 @@ defmodule Membrane.Element.IBMSpeechToText do
   It uses [ibm_speech_to_text](https://github.com/SoftwareMansion/elixir-ibm-speech-to-text)
   client library.
   """
-  use Membrane.Element.Base.Sink
+  use Membrane.Sink
   use Membrane.Log, tags: :membrane_element_ibm_stt
   alias Membrane.Buffer
   alias Membrane.Caps.Audio.FLAC
-  alias Membrane.Event.EndOfStream
   alias Membrane.Time
   alias IBMSpeechToText.{Client, Message, Response}
 
@@ -95,7 +94,7 @@ defmodule Membrane.Element.IBMSpeechToText do
   end
 
   @impl true
-  def handle_event(:input, %EndOfStream{}, ctx, %{connection: conn} = state) do
+  def handle_end_of_stream(:input, ctx, %{connection: conn} = state) do
     Client.send_message(conn, %Message.Stop{})
     info("End of Stream")
 
@@ -103,12 +102,7 @@ defmodule Membrane.Element.IBMSpeechToText do
       Process.cancel_timer(state.timer)
     end
 
-    super(:input, %EndOfStream{}, ctx, %{state | timer: nil})
-  end
-
-  @impl true
-  def handle_event(pad, event, ctx, state) do
-    super(pad, event, ctx, state)
+    super(:input, ctx, %{state | timer: nil})
   end
 
   @impl true
