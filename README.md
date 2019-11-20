@@ -15,7 +15,7 @@ The package can be installed by adding `membrane_element_ibm_speech_to_text` to 
 ```elixir
 def deps do
   [
-    {:membrane_element_ibm_speech_to_text, "~> 0.1.0"}
+    {:membrane_element_ibm_speech_to_text, "~> 0.2.0"}
   ]
 end
 ```
@@ -98,5 +98,5 @@ config :ibm_speech_to_text, api_key: "YOUR_API_KEY_HERE"
 Copyright 2019, [Software Mansion](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=membrane-element-ibm-speech-to-text)
 
 [![Software Mansion](https://membraneframework.github.io/static/logo/swm_logo_readme.png)](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=membrane-element-ibm-speech-to-text)
-
+ipeline
 Licensed under the [Apache License, Version 2.0](LICENSE)
