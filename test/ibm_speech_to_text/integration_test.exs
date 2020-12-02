@@ -3,7 +3,7 @@ defmodule Membrane.Element.GCloud.SpeechToText.IntegrationTest do
 
   alias Membrane.Testing
   alias IBMSpeechToText.{RecognitionAlternative, RecognitionResult, Response}
-  alias Membrane.Element.{File, FLACParser, IBMSpeechToText}
+  alias Membrane.Element.{FLACParser, IBMSpeechToText}
 
   import Membrane.Testing.Assertions
 
@@ -15,7 +15,7 @@ defmodule Membrane.Element.GCloud.SpeechToText.IntegrationTest do
     assert {:ok, pid} =
              Testing.Pipeline.start_link(%Testing.Pipeline.Options{
                elements: [
-                 src: %File.Source{location: @fixture_path},
+                 src: %Membrane.File.Source{location: @fixture_path},
                  parser: FLACParser,
                  sink: %IBMSpeechToText{
                    region: Application.get_env(:ibm_speech_to_text, :region, :frankfurt),
