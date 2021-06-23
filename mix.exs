@@ -39,10 +39,10 @@ defmodule Membrane.Element.IBMSpeechToText.MixProject do
       {:membrane_core, "~> 0.7.0"},
       {:membrane_caps_audio_flac, "~> 0.1.1"},
       {:ibm_speech_to_text, "~> 0.3.0"},
-      {:ex_doc, "~> 0.21", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.24", only: :dev, runtime: false},
       {:dialyxir, "~> 1.0.0", only: [:dev], runtime: false},
-      {:membrane_file_plugin, "~> 0.5.0", only: [:dev, :test]},
-      {:membrane_element_flac_parser, "~> 0.4.0", only: [:dev, :test]}
+      {:membrane_file_plugin, "~> 0.6.0", only: [:dev, :test]},
+      {:membrane_element_flac_parser, "~> 0.5.0", only: [:dev, :test]}
     ]
   end
 
