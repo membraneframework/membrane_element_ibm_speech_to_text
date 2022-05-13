@@ -1,11 +1,11 @@
 defmodule Membrane.Element.GCloud.SpeechToText.IntegrationTest do
   use ExUnit.Case
 
+  import Membrane.Testing.Assertions
+
   alias Membrane.Testing
   alias IBMSpeechToText.{RecognitionAlternative, RecognitionResult, Response}
   alias Membrane.Element.{FLACParser, IBMSpeechToText}
-
-  import Membrane.Testing.Assertions
 
   @moduletag :external
 

@@ -1,17 +1,18 @@
 defmodule Membrane.Element.IBMSpeechToText.MixProject do
   use Mix.Project
 
-  @version "0.5.0"
+  @version "0.6.0"
   @github_url "https://github.com/membraneframework/membrane-element-ibm-speech-to-text"
 
   def project do
     [
       app: :membrane_element_ibm_speech_to_text,
       version: @version,
-      elixir: "~> 1.7",
+      elixir: "~> 1.12",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
+      dialyzer: dialyzer(),
 
       # hex
       description: "Membrane Multimedia Framework (IBMSpeechToText Element)",
@@ -39,17 +40,31 @@ defmodule Membrane.Element.IBMSpeechToText.MixProject do
       {:membrane_core, "~> 0.8.0"},
       {:membrane_caps_audio_flac, "~> 0.1.1"},
       {:ibm_speech_to_text, "~> 0.3.0"},
-      {:ex_doc, "~> 0.24", only: :dev, runtime: false},
-      {:dialyxir, "~> 1.0.0", only: [:dev], runtime: false},
       {:membrane_file_plugin, "~> 0.7.0", only: [:dev, :test]},
-      {:membrane_flac_plugin, "~> 0.7.0", only: [:dev, :test]}
+      {:membrane_flac_plugin, "~> 0.7.0", only: [:dev, :test]},
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
+      {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
+      {:credo, ">= 0.0.0", only: :dev, runtime: false}
     ]
+  end
+
+  defp dialyzer() do
+    opts = [
+      flags: [:error_handling]
+    ]
+
+    if System.get_env("CI") == "true" do
+      # Store PLTs in cacheable directory for CI
+      [plt_local_path: "priv/plts", plt_core_path: "priv/plts"] ++ opts
+    else
+      opts
+    end
   end
 
   defp package do
     [
       maintainers: ["Membrane Team"],
-      licenses: ["Apache 2.0"],
+      licenses: ["Apache-2.0"],
       links: %{
         "GitHub" => @github_url,
         "Membrane Framework Homepage" => "https://membraneframework.org"
@@ -61,6 +76,7 @@ defmodule Membrane.Element.IBMSpeechToText.MixProject do
     [
       main: "readme",
       extras: ["README.md"],
+      formatters: ["html"],
       source_ref: "v#{@version}",
       nest_modules_by_prefix: [Membrane.Element],
       before_closing_head_tag: &sidebar_fix/1
