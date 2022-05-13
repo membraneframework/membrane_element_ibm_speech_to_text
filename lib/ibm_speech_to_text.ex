@@ -9,7 +9,7 @@ defmodule Membrane.Element.IBMSpeechToText do
   client library.
   """
   use Membrane.Sink
-  use Membrane.Log, tags: :membrane_element_ibm_stt
+  require Membrane.Logger
   alias Membrane.Buffer
   alias Membrane.Caps.Audio.FLAC
   alias Membrane.Time
@@ -71,7 +71,7 @@ defmodule Membrane.Element.IBMSpeechToText do
   @impl true
   def handle_prepared_to_playing(_ctx, state) do
     with {:ok, pid} <- Client.start_link(state.region, state.api_key, state.client_options) do
-      info("IBM API Client started")
+      Membrane.Logger.info("IBM API Client started")
       {{:ok, demand: :input}, %{state | connection: pid}}
     end
   end
@@ -79,13 +79,13 @@ defmodule Membrane.Element.IBMSpeechToText do
   @impl true
   def handle_playing_to_prepared(_ctx, %{connection: conn} = state) do
     Client.stop(conn)
-    info("IBM API Client stopped")
+    Membrane.Logger.info("IBM API Client stopped")
     {:ok, %{state | connection: nil}}
   end
 
   @impl true
   def handle_caps(:input, %FLAC{} = caps, _ctx, %{connection: conn} = state) do
-    info("Starting recognition")
+    Membrane.Logger.info("Starting recognition")
     message = struct!(Message.Start, state.recognition_options)
     Client.send_message(conn, message)
     start_time = Time.os_time()
@@ -96,7 +96,7 @@ defmodule Membrane.Element.IBMSpeechToText do
   @impl true
   def handle_end_of_stream(:input, ctx, %{connection: conn} = state) do
     Client.send_message(conn, %Message.Stop{})
-    info("End of Stream")
+    Membrane.Logger.info("End of Stream")
 
     if state.timer != nil do
       Process.cancel_timer(state.timer)

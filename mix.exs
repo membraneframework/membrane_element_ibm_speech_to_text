@@ -75,21 +75,10 @@ defmodule Membrane.Element.IBMSpeechToText.MixProject do
   defp docs do
     [
       main: "readme",
-      extras: ["README.md"],
+      extras: ["README.md", "LICENSE"],
       formatters: ["html"],
       source_ref: "v#{@version}",
-      nest_modules_by_prefix: [Membrane.Element],
-      before_closing_head_tag: &sidebar_fix/1
+      nest_modules_by_prefix: [Membrane.Element]
     ]
-  end
-
-  defp sidebar_fix(_) do
-    """
-    <style type="text/css">
-    .sidebar div.sidebar-header {
-      margin: 15px;
-    }
-    </style>
-    """
   end
 end

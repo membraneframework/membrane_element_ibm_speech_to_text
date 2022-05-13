@@ -25,8 +25,6 @@ defmodule Membrane.Element.GCloud.SpeechToText.IntegrationTest do
     assert {:ok, pid} =
              Testing.Pipeline.start_link(links: Membrane.ParentSpec.link_linear(children))
 
-    assert :ok = Testing.Pipeline.play(pid)
-
     assert_end_of_stream(pid, :sink, :input, 10_000)
 
     assert_pipeline_notified(pid, :sink, %Response{} = response, 10_000)
