@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 secret_config = "#{Mix.env()}.secret.exs" |> Path.expand(__DIR__)
 
