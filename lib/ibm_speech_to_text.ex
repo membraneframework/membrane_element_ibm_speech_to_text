@@ -1,4 +1,4 @@
-defmodule Membrane.Element.IBMSpeechToText do
+defmodule Membrane.IBMSpeechToText do
   @moduledoc """
   An element providing speech recognition via IBM Cloud Speech to Text service.
 
@@ -15,27 +15,26 @@ defmodule Membrane.Element.IBMSpeechToText do
   alias Membrane.Time
   alias IBMSpeechToText.{Client, Message, Response}
 
-  def_input_pad :input, caps: FLAC, demand_unit: :buffers
+  def_input_pad :input, accepted_format: FLAC, demand_unit: :buffers
 
   def_options region: [
                 description: """
                 Region in which the endpoint is located.
                 See `t:IBMSpeechToText.region/0`
                 """,
-                type: :atom,
                 spec: IBMSpeechToText.region()
               ],
               api_key: [
                 description: """
                 API key for the Speech to Text Service
                 """,
-                type: :string
+                spec: String.t()
               ],
               client_options: [
                 description: """
                 Sets the options for `IBMSpeechToText.Client.start_link/3`.
                 """,
-                type: :keyword,
+                spec: keyword(),
                 default: [keep_alive: true]
               ],
               recognition_options: [
@@ -45,12 +44,12 @@ defmodule Membrane.Element.IBMSpeechToText do
                 See the docs for `t:IBMSpeechToText.Message.Start.t/0`
                 and [IBM API docs](https://cloud.ibm.com/apidocs/speech-to-text#wstextmessages)
                 """,
-                type: :keyword,
+                spec: keyword(),
                 default: [interim_results: true]
               ]
 
   @impl true
-  def handle_init(opts) do
+  def handle_init(_ctx, opts) do
     state =
       opts
       |> Map.from_struct()
@@ -65,32 +64,32 @@ defmodule Membrane.Element.IBMSpeechToText do
         Keyword.merge(rec_opts, content_type: :flac, inactivity_timeout: -1)
       end)
 
-    {:ok, state}
+    {[], state}
   end
 
   @impl true
-  def handle_prepared_to_playing(_ctx, state) do
+  def handle_playing(_ctx, state) do
     with {:ok, pid} <- Client.start_link(state.region, state.api_key, state.client_options) do
       Membrane.Logger.info("IBM API Client started")
-      {{:ok, demand: :input}, %{state | connection: pid}}
+      {[demand: :input], %{state | connection: pid}}
     end
   end
 
   @impl true
-  def handle_playing_to_prepared(_ctx, %{connection: conn} = state) do
+  def handle_terminate_request(_ctx, %{connection: conn} = state) do
     Client.stop(conn)
     Membrane.Logger.info("IBM API Client stopped")
-    {:ok, %{state | connection: nil}}
+    {[terminate: :normal], %{state | connection: nil}}
   end
 
   @impl true
-  def handle_caps(:input, %FLAC{} = caps, _ctx, %{connection: conn} = state) do
+  def handle_stream_format(:input, %FLAC{} = stream_format, _ctx, %{connection: conn} = state) do
     Membrane.Logger.info("Starting recognition")
     message = struct!(Message.Start, state.recognition_options)
     Client.send_message(conn, message)
     start_time = Time.os_time()
-    state = %{state | start_time: start_time, sample_rate: caps.sample_rate}
-    {:ok, state}
+    state = %{state | start_time: start_time, sample_rate: stream_format.sample_rate}
+    {[], state}
   end
 
   @impl true
@@ -116,29 +115,29 @@ defmodule Membrane.Element.IBMSpeechToText do
 
     next_sample_num = meta.starting_sample_number + meta.samples
     next_frame_time = start_time + trunc(next_sample_num * Time.seconds(1) / sample_rate)
-    demand_time = (next_frame_time - Time.os_time()) |> max(0) |> Time.to_milliseconds()
+    demand_time = (next_frame_time - Time.os_time()) |> max(0) |> Time.round_to_milliseconds()
     timer = Process.send_after(self(), :demand_frame, demand_time)
 
-    {:ok, %{state | timer: timer}}
+    {[], %{state | timer: timer}}
   end
 
   @impl true
   def handle_write(:input, %Buffer{payload: payload}, _ctx, %{connection: conn} = state) do
     Client.send_data(conn, payload)
-    {{:ok, demand: :input}, state}
+    {[demand: :input], state}
   end
 
   @impl true
-  def handle_other(%Response{} = response, _ctx, state) do
-    {{:ok, notify: response}, state}
+  def handle_info(%Response{} = response, _ctx, state) do
+    {[notify: response], state}
   end
 
   @impl true
-  def handle_other(:demand_frame, ctx, state) do
-    if ctx.playback_state == :playing do
-      {{:ok, demand: :input}, state}
+  def handle_info(:demand_frame, ctx, state) do
+    if ctx.playback == :playing do
+      {[demand: :input], state}
     else
-      {:ok, state}
+      {[], state}
     end
   end
 end
