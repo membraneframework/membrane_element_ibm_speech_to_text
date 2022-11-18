@@ -15,7 +15,7 @@ The package can be installed by adding `membrane_element_ibm_speech_to_text` to 
 ```elixir
 def deps do
   [
-    {:membrane_element_ibm_speech_to_text, "~> 0.6.0"}
+    {:membrane_element_ibm_speech_to_text, "~> 0.7.0"}
   ]
 end
 ```
