@@ -1,4 +1,6 @@
 defmodule Membrane.Element.GCloud.SpeechToText.IntegrationTest do
+  @moduledoc false
+
   use ExUnit.Case
 
   import Membrane.ChildrenSpec
@@ -23,7 +25,7 @@ defmodule Membrane.Element.GCloud.SpeechToText.IntegrationTest do
       })
     ]
 
-    assert {:ok, _supervisor, pid} = Testing.Pipeline.start_link(structure: structure)
+    pid = Testing.Pipeline.start_link_supervised!(structure: structure)
 
     assert_end_of_stream(pid, :sink, :input, 10_000)
 

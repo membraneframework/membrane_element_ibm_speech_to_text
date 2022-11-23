@@ -10,10 +10,9 @@ defmodule Membrane.IBMSpeechToText do
   """
   use Membrane.Sink
   require Membrane.Logger
-  alias Membrane.Buffer
   alias Membrane.Caps.Audio.FLAC
-  alias Membrane.Time
   alias IBMSpeechToText.{Client, Message, Response}
+  alias Membrane.{Buffer, Time, UtilitySupervisor}
 
   def_input_pad :input, accepted_format: FLAC, demand_unit: :buffers
 
@@ -68,18 +67,16 @@ defmodule Membrane.IBMSpeechToText do
   end
 
   @impl true
-  def handle_playing(_ctx, state) do
-    with {:ok, pid} <- Client.start_link(state.region, state.api_key, state.client_options) do
+  def handle_playing(ctx, state) do
+    client = %{
+      id: Client,
+      start: {Client, :start_link, [state.region, state.api_key, state.client_options]}
+    }
+
+    with {:ok, pid} <- UtilitySupervisor.start_link_child(ctx.utility_supervisor, client) do
       Membrane.Logger.info("IBM API Client started")
       {[demand: :input], %{state | connection: pid}}
     end
-  end
-
-  @impl true
-  def handle_terminate_request(_ctx, %{connection: conn} = state) do
-    Client.stop(conn)
-    Membrane.Logger.info("IBM API Client stopped")
-    {[terminate: :normal], %{state | connection: nil}}
   end
 
   @impl true
@@ -129,7 +126,7 @@ defmodule Membrane.IBMSpeechToText do
 
   @impl true
   def handle_info(%Response{} = response, _ctx, state) do
-    {[notify: response], state}
+    {[notify_parent: response], state}
   end
 
   @impl true
