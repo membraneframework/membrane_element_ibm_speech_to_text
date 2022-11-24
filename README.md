@@ -32,40 +32,31 @@ defmodule SpeechRecognition do
   use Membrane.Pipeline
 
   alias IBMSpeechToText.Response
-  alias Membrane.Element.{File, FLACParser, IBMSpeechToText}
+  alias Membrane.{File, IBMSpeechToText}
+  alias Membrane.FLAC.Parser
 
   @impl true
-  def handle_init(_) do
-    children = [
-      src: %File.Source{location: "sample.flac"},
-      parser: FLACParser,
-      sink: %IBMSpeechToText{
+  def handle_init(_ctx, _opts) do
+    structure = [
+      child(:src, %File.Source{location: "sample.flac"}),
+      child(:parser, Parser),
+      child(:sink, %IBMSpeechToText{
         region: :frankfurt,
         api_key: "PUT_YOUR_API_KEY_HERE"
-      }
+      })
     ]
 
-    links = %{
-      {:src, :output} => {:parser, :input},
-      {:parser, :output} => {:sink, :input}
-    }
-
-    spec = %Membrane.Pipeline.Spec{
-      children: children,
-      links: links
-    }
-
-    {{:ok, spec}, %{}}
+    {[spec: structure, playback: :playing], nil}
   end
 
   @impl true
-  def handle_notification(%Response{} = response, _element, state) do
+  def handle_child_notification(%Response{} = response, _element, _ctx, state) do
     IO.inspect(response)
-    {:ok, state}
+    {[], state}
   end
 
-  def handle_notification(_notification, _element, state) do
-    {:ok, state}
+  def handle_child_notification(_notification, _element, _ctx, state) do
+    {[], state}
   end
 end
 ```
@@ -74,10 +65,10 @@ To run, the pipeline requires following dependencies:
 
 ```elixir
 [
-  {:membrane_core, "~> 0.8.0"},
-  {:membrane_file_plugin, "~> 0.7.0"},
-  {:membrane_flac_plugin, "~> 0.7.0"},
-  {:membrane_element_ibm_speech_to_text, "~> 0.5.0"}
+  {:membrane_core, "~> 0.11.0"},
+  {:membrane_file_plugin, "~> 0.13.0"},
+  {:membrane_flac_plugin, "~> 0.9.0"},
+  {:membrane_element_ibm_speech_to_text, "~> 0.7.0"}
 ]
 ```
 
