@@ -40,11 +40,8 @@ defmodule Membrane.Element.IBMSpeechToText.MixProject do
       {:membrane_core, "~> 0.11.0"},
       {:membrane_caps_audio_flac, "~> 0.1.1"},
       {:ibm_speech_to_text, "~> 0.3.0"},
-      {:membrane_file_plugin, "~> 0.13.0", only: [:dev, :test]},
-      {:membrane_flac_plugin,
-       git: "https://github.com/membraneframework/membrane_flac_plugin.git",
-       branch: "update_core_0_11_0",
-       only: [:dev, :test]},
+      {:membrane_file_plugin, "~> 0.13.0"},
+      {:membrane_flac_plugin, "~> 0.9.0"},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
       {:credo, ">= 0.0.0", only: :dev, runtime: false}

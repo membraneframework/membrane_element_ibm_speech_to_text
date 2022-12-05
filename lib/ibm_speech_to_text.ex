@@ -76,6 +76,8 @@ defmodule Membrane.IBMSpeechToText do
     with {:ok, pid} <- UtilitySupervisor.start_link_child(ctx.utility_supervisor, client) do
       Membrane.Logger.info("IBM API Client started")
       {[demand: :input], %{state | connection: pid}}
+    else
+      {:error, reason} -> raise "Failed to start IBM API Client, reason: #{inspect(reason)}"
     end
   end
 
