@@ -38,14 +38,14 @@ defmodule SpeechRecognition do
 
   @impl true
   def handle_init(_ctx, _opts) do
-    structure = [
-      child(:src, %File.Source{location: "sample.flac"}),
-      child(:parser, Parser),
-      child(:sink, %IBMSpeechToText{
+    structure = 
+      child(:src, %File.Source{location: "sample.flac"})
+      |> child(:parser, Parser)
+      |> child(:sink, %IBMSpeechToText{
         region: :frankfurt,
         api_key: "PUT_YOUR_API_KEY_HERE"
       })
-    ]
+    
 
     {[spec: structure, playback: :playing], nil}
   end
