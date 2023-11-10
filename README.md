@@ -16,7 +16,7 @@ The package can be installed by adding `membrane_element_ibm_speech_to_text` to 
 ```elixir
 def deps do
   [
-    {:membrane_element_ibm_speech_to_text, "~> 0.8.0"}
+    {:membrane_element_ibm_speech_to_text, "~> 0.9.0"}
   ]
 end
 ```
@@ -38,15 +38,14 @@ defmodule SpeechRecognition do
 
   @impl true
   def handle_init(_ctx, _opts) do
-    structure = [
-      child(:src, %File.Source{location: "sample.flac"}),
-      child(:parser, Parser),
-      child(:sink, %IBMSpeechToText{
+    structure = 
+      child(:src, %File.Source{location: "sample.flac"})
+      |> child(:parser, Parser)
+      |> child(:sink, %IBMSpeechToText{
         region: :frankfurt,
         api_key: "PUT_YOUR_API_KEY_HERE"
       })
-    ]
-
+    
     {[spec: structure, playback: :playing], nil}
   end
 
@@ -66,10 +65,10 @@ To run, the pipeline requires following dependencies:
 
 ```elixir
 [
-  {:membrane_core, "~> 0.11.0"},
-  {:membrane_file_plugin, "~> 0.13.0"},
-  {:membrane_flac_plugin, "~> 0.9.0"},
-  {:membrane_element_ibm_speech_to_text, "~> 0.8.0"}
+  {:membrane_core, "~> 1.0"},
+  {:membrane_file_plugin, "~> 0.16.0"},
+  {:membrane_flac_plugin, "~> 0.11.0"},
+  {:membrane_element_ibm_speech_to_text, "~> 0.9.0"}
 ]
 ```
 

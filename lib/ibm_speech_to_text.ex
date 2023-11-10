@@ -14,7 +14,7 @@ defmodule Membrane.IBMSpeechToText do
   alias IBMSpeechToText.{Client, Message, Response}
   alias Membrane.{Buffer, Time, UtilitySupervisor}
 
-  def_input_pad :input, accepted_format: FLAC, demand_unit: :buffers
+  def_input_pad :input, accepted_format: FLAC, demand_unit: :buffers, flow_control: :manual
 
   def_options region: [
                 description: """
@@ -104,7 +104,7 @@ defmodule Membrane.IBMSpeechToText do
   end
 
   @impl true
-  def handle_write(
+  def handle_buffer(
         :input,
         %Buffer{payload: payload, metadata: %FLAC.FrameMetadata{} = meta},
         _ctx,
@@ -114,14 +114,14 @@ defmodule Membrane.IBMSpeechToText do
 
     next_sample_num = meta.starting_sample_number + meta.samples
     next_frame_time = start_time + trunc(next_sample_num * Time.seconds(1) / sample_rate)
-    demand_time = (next_frame_time - Time.os_time()) |> max(0) |> Time.round_to_milliseconds()
+    demand_time = (next_frame_time - Time.os_time()) |> max(0) |> Time.as_milliseconds(:round)
     timer = Process.send_after(self(), :demand_frame, demand_time)
 
     {[], %{state | timer: timer}}
   end
 
   @impl true
-  def handle_write(:input, %Buffer{payload: payload}, _ctx, %{connection: conn} = state) do
+  def handle_buffer(:input, %Buffer{payload: payload}, _ctx, %{connection: conn} = state) do
     Client.send_data(conn, payload)
     {[demand: :input], state}
   end

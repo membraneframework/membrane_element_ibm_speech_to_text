@@ -15,7 +15,7 @@ defmodule Membrane.Element.GCloud.SpeechToText.IntegrationTest do
   @fixture_path "../fixtures/sample.flac" |> Path.expand(__DIR__)
 
   test "recognition pipeline provides transcription of short file" do
-    structure = [
+    spec = [
       child(:src, %Membrane.File.Source{location: @fixture_path})
       |> child(:parser, Parser)
       |> child(:sink, %IBMSpeechToText{
@@ -25,7 +25,7 @@ defmodule Membrane.Element.GCloud.SpeechToText.IntegrationTest do
       })
     ]
 
-    pid = Testing.Pipeline.start_link_supervised!(structure: structure)
+    pid = Testing.Pipeline.start_link_supervised!(spec: spec)
 
     assert_end_of_stream(pid, :sink, :input, 10_000)
 
