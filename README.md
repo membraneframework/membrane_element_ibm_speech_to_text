@@ -46,7 +46,6 @@ defmodule SpeechRecognition do
         api_key: "PUT_YOUR_API_KEY_HERE"
       })
     
-
     {[spec: structure, playback: :playing], nil}
   end
 
