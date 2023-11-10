@@ -66,10 +66,10 @@ To run, the pipeline requires following dependencies:
 
 ```elixir
 [
-  {:membrane_core, "~> 0.11.0"},
-  {:membrane_file_plugin, "~> 0.13.0"},
-  {:membrane_flac_plugin, "~> 0.9.0"},
-	{:membrane_element_ibm_speech_to_text, "~> 0.9.0"}
+  {:membrane_core, "~> 1.0"},
+  {:membrane_file_plugin, "~> 0.16.0"},
+  {:membrane_flac_plugin, "~> 0.11.0"},
+  {:membrane_element_ibm_speech_to_text, "~> 0.9.0"}
 ]
 ```
 
