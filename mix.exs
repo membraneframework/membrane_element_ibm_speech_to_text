@@ -1,7 +1,7 @@
 defmodule Membrane.Element.IBMSpeechToText.MixProject do
   use Mix.Project
 
-  @version "0.8.0"
+  @version "0.9.0"
   @github_url "https://github.com/membraneframework/membrane-element-ibm-speech-to-text"
 
   def project do
@@ -37,11 +37,11 @@ defmodule Membrane.Element.IBMSpeechToText.MixProject do
 
   defp deps do
     [
-      {:membrane_core, "~> 0.12.0"},
+      {:membrane_core, "~> 1.0"},
       {:membrane_caps_audio_flac, "~> 0.1.1"},
       {:ibm_speech_to_text, "~> 0.3.0"},
       {:membrane_file_plugin, "~> 0.13.0"},
-      {:membrane_flac_plugin, "~> 0.10.0"},
+      {:membrane_flac_plugin, "~> 0.11.0"},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
       {:credo, ">= 0.0.0", only: :dev, runtime: false}
