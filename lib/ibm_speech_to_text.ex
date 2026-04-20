@@ -10,9 +10,9 @@ defmodule Membrane.IBMSpeechToText do
   """
   use Membrane.Sink
   require Membrane.Logger
-  alias Membrane.Caps.Audio.FLAC
   alias IBMSpeechToText.{Client, Message, Response}
   alias Membrane.{Buffer, Time, UtilitySupervisor}
+  alias Membrane.Caps.Audio.FLAC
 
   def_input_pad :input, accepted_format: FLAC, demand_unit: :buffers, flow_control: :manual
 
