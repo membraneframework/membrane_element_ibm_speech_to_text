@@ -1,7 +1,7 @@
 defmodule Membrane.Element.IBMSpeechToText.MixProject do
   use Mix.Project
 
-  @version "0.9.0"
+  @version "0.9.1"
   @github_url "https://github.com/membraneframework/membrane-element-ibm-speech-to-text"
 
   def project do
@@ -37,6 +37,7 @@ defmodule Membrane.Element.IBMSpeechToText.MixProject do
 
   defp deps do
     [
+      {:gun, "~> 2.2.0", override: true},
       {:membrane_core, "~> 1.0"},
       {:membrane_caps_audio_flac, "~> 0.1.1"},
       {:ibm_speech_to_text, "~> 0.3.0"},
@@ -55,6 +56,7 @@ defmodule Membrane.Element.IBMSpeechToText.MixProject do
 
     if System.get_env("CI") == "true" do
       # Store PLTs in cacheable directory for CI
+      File.mkdir_p!(Path.join([__DIR__, "priv", "plts"]))
       [plt_local_path: "priv/plts", plt_core_path: "priv/plts"] ++ opts
     else
       opts
