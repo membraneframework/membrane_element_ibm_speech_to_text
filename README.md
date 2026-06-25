@@ -16,7 +16,7 @@ The package can be installed by adding `membrane_element_ibm_speech_to_text` to 
 ```elixir
 def deps do
   [
-    {:membrane_element_ibm_speech_to_text, "~> 0.9.0"}
+    {:membrane_element_ibm_speech_to_text, "~> 0.9.1"}
   ]
 end
 ```
@@ -68,7 +68,7 @@ To run, the pipeline requires following dependencies:
   {:membrane_core, "~> 1.0"},
   {:membrane_file_plugin, "~> 0.16.0"},
   {:membrane_flac_plugin, "~> 0.11.0"},
-  {:membrane_element_ibm_speech_to_text, "~> 0.9.0"}
+  {:membrane_element_ibm_speech_to_text, "~> 0.9.1"}
 ]
 ```
 
