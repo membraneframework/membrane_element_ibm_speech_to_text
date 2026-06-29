@@ -43,7 +43,7 @@ defmodule Membrane.Element.IBMSpeechToText.MixProject do
       {:ibm_speech_to_text, "~> 0.3.0"},
       {:membrane_file_plugin, "~> 0.16.0"},
       {:membrane_flac_plugin, "~> 0.11.0"},
-      {:ex_doc, "~> 0.40", only: :dev, runtime: false},
+      {:ex_doc, ">= 0.40.0", only: :dev, runtime: false},
       {:dialyxir, ">= 0.0.0", only: :dev, runtime: false},
       {:credo, ">= 0.0.0", only: :dev, runtime: false}
     ]
